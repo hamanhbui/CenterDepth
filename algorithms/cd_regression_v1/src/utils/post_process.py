@@ -1,8 +1,6 @@
 import numpy as np
 import cv2
 from .image import transform_preds_with_trans, get_affine_transform
-from .ddd_utils import ddd2locrot, comput_corners_3d
-from .ddd_utils import project_to_image, rot_y2alpha
 import numba
 
 def generic_post_process(

@@ -1,7 +1,7 @@
 import os
+import time
 import logging
 import shutil
-import pickle
 import numpy as np
 import pandas as pd
 import torch
@@ -9,11 +9,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-import time
-import torch
-import numpy as np
 from progress.bar import Bar
-
 from utils.utils import AverageMeter
 
 from models.losses import FastFocalLoss, RegWeightedL1Loss
@@ -153,9 +149,7 @@ class Trainer_cd_regression_v1:
 
         if opt.val_intervals < opt.epochs or opt.test:
             print('Setting up validation data...')
-            self.val_loader = torch.utils.data.DataLoader(
-                Dataset(opt.train_meta_filenames, opt, 'val'), batch_size=1, shuffle=False, num_workers=1,
-                pin_memory=True)
+            self.val_loader = DataLoader(Dataset(opt.train_meta_filenames, opt, 'val'), batch_size=1, shuffle=False, num_workers=1, pin_memory=True)
 
             if opt.test:
                 _, preds = trainer.val(0, val_loader)
@@ -163,10 +157,7 @@ class Trainer_cd_regression_v1:
                 return
 
         print('Setting up train data...')
-        self.train_loader = torch.utils.data.DataLoader(
-            Dataset(opt.val_meta_filenames, opt, 'train'), batch_size=opt.batch_size, shuffle=True,
-            num_workers=4, pin_memory=True, drop_last=True
-        )
+        self.train_loader = DataLoader(Dataset(opt.val_meta_filenames, opt, 'train'), batch_size=opt.batch_size, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
 
     def set_writer(self, log_dir):
         if not os.path.exists(log_dir):

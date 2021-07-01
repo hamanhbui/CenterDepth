@@ -67,10 +67,11 @@ if __name__ == "__main__":
         args = argparse.Namespace(**json.load(inp))
 
     args = parse(args, bash_args)
-        
+    
     os.environ["CUDA_VISIBLE_DEVICES"] = bash_args.gpu_id  
+    torch.cuda.set_device(int(bash_args.gpu_id))
         
-    # fix_random_seed(args.seed_value)
+    fix_random_seed(args.seed_value)
     logging.basicConfig(filename = "algorithms/" + args.algorithm + "/results/logs/" + args.exp_name + "_" + bash_args.exp_id + '.log', filemode = 'w', level = logging.INFO)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
