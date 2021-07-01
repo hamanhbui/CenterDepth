@@ -7,7 +7,9 @@ import torch
 import numpy as np
 import random
 
-from algorithms.cd_regression_v1.src.Trainer_cd_regression_v1 import Trainer_cd_regression_v1
+from algorithms.cd_regression_v1.src.trainer import Trainer_cd_regression_v1
+from algorithms.cd_regression_v1.src.test import test
+# from algorithms.cd_regression_v1.src.demo import demo
 
 def fix_random_seed(seed_value):
     random.seed(seed_value)
@@ -22,21 +24,16 @@ def fix_random_seed(seed_value):
         torch.backends.cudnn.deterministic = True
 
 def parse(opt, bash_args):
+    opt.exp_id = bash_args.exp_id
     opt.lr_step = [int(i) for i in opt.lr_step.split(',')]
-    opt.save_point = [int(i) for i in opt.save_point.split(',')]
     opt.test_scales = [1.0]
 
-    opt.pre_img = False
-
-    print('Running tracking')
     opt.out_thresh = opt.track_thresh
     opt.pre_thresh = opt.track_thresh
     opt.new_thresh = opt.track_thresh
     opt.pre_img = True
-    print('Using tracking threshold for out threshold!', opt.track_thresh)
 
     opt.fix_res = True
-    print('Fix size testing.' if opt.fix_res else 'Keep resolution testing.')
 
     opt.head_conv = 256 if 'dla' in opt.model else 64
 
@@ -50,7 +47,30 @@ def parse(opt, bash_args):
     opt.save_dir = os.path.join(opt.exp_dir, bash_args.exp_id)
     
     if opt.resume and opt.load_model == '':
-      opt.load_model = os.path.join(opt.save_dir, 'model_last.pth')
+      opt.load_model = "algorithms/" + opt.algorithm + "/results/checkpoints/" + opt.exp_name + "_" + opt.exp_id + '.pt'
+
+    opt.num_classes =  opt.num_classes
+    opt.output_h = opt.input_h // 4
+    opt.output_w = opt.input_w // 4
+    opt.input_res = max(opt.input_h, opt.input_w)
+    opt.output_res = max(opt.output_h, opt.output_w)
+  
+    opt.heads = {'hm': opt.num_classes, 'reg': 2, 'wh': 2, 'dep': 1, 'tracking': 2}
+
+    weight_dict = {'hm': 1, 'wh': 0.1, 'reg': 1, 'dep': 1, 'tracking': 1}
+
+    opt.weights = {head: weight_dict[head] for head in opt.heads}
+    for head in opt.weights:
+      if opt.weights[head] == 0:
+        del opt.heads[head]
+    opt.head_conv = {head: [opt.head_conv \
+      for i in range(1 if head != 'reg' else 1)] for head in opt.heads}
+    
+    print('input h w:', opt.input_h, opt.input_w)
+    print('heads', opt.heads)
+    print('weights', opt.weights)
+    print('head conv', opt.head_conv)
+
     return opt
 
 algorithms_map = {
@@ -71,11 +91,14 @@ if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = bash_args.gpu_id  
     torch.cuda.set_device(int(bash_args.gpu_id))
         
-    fix_random_seed(args.seed_value)
+    # fix_random_seed(args.seed_value)
     logging.basicConfig(filename = "algorithms/" + args.algorithm + "/results/logs/" + args.exp_name + "_" + bash_args.exp_id + '.log', filemode = 'w', level = logging.INFO)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    trainer = algorithms_map[args.algorithm](args, device, bash_args.exp_id)
-    trainer.train()
+    # trainer = algorithms_map[args.algorithm](args, device, bash_args.exp_id)
+    # trainer.train()
     # trainer.test()
     print("Finished!")
+
+    test(args)
+    # demo(args)
