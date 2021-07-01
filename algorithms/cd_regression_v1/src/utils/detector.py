@@ -23,7 +23,7 @@ class Detector(object):
     print('Creating model...')
     self.model = create_model(
       opt.arch, opt.heads, opt.head_conv, opt=opt)
-    self.model = load_model(self.model, opt.load_model, opt)
+    self.model = load_model(self.model, opt.checkpoint_name, opt)
     self.model = self.model.to(opt.device)
     self.model.eval()
 

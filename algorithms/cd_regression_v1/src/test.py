@@ -62,7 +62,7 @@ def save_img(img, img_path, out_path, results):
 
 def test(opt):
   Dataset = get_dataset('custom')
-  split = 'val' if not opt.trainval else 'test'
+  split = 'test'
   dataset = Dataset(opt.test_meta_filenames, opt, split)
   detector = Detector(opt)
   

@@ -52,7 +52,7 @@ def load_model(model, model_path, opt, optimizer=None):
     if 'optimizer' in checkpoint:
       # optimizer.load_state_dict(checkpoint['optimizer'])
       start_epoch = checkpoint['epoch']
-      start_lr = opt.lr
+      start_lr = opt.learning_rate
       for step in opt.lr_step:
         if start_epoch >= step:
           start_lr *= 0.1

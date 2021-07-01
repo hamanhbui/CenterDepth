@@ -7,14 +7,14 @@ width = 1920
 x_scale = 960 / width
 y_scale = 544 / height
 
-def convert_2_COCO(meta_datas = ["cam30_straight_0", "cam30_straight_1", "cam30_straight_2", "cam30_curve_0", "cam30_curve_1", "cam30_curve_2"]):
+def convert_2_COCO(meta_datas = ["cam425_test_long_1", "cam425_test_curve_1"]):
     data = {"images": [], "annotations": [], "videos": [], "categories": [{ "id": 1, "name": "Traffic_light"}, { "id": 2, "name": "Traffic_sign"}]}
     train_data = {"images": [], "annotations": [], "videos": [], "categories": [{ "id": 1, "name": "Traffic_light"}, { "id": 2, "name": "Traffic_sign"}]}
     valid_data = {"images": [], "annotations": [], "videos": [], "categories": [{ "id": 1, "name": "Traffic_light"}, { "id": 2, "name": "Traffic_sign"}]}
     test_data = {"images": [], "annotations": [], "videos": [], "categories": [{ "id": 1, "name": "Traffic_light"}, { "id": 2, "name": "Traffic_sign"}]}
     for idx in range(len(meta_datas)):
         meta_data = meta_datas[idx]
-        with open('data/data_2806_1k/' + meta_data + '/annotations.json') as json_file:
+        with open('../data0107_test/' + meta_data + '/annotations.json') as json_file:
             new_data = json.load(json_file)
             for p in new_data["images"]:
                 p["height"] = 544
@@ -35,7 +35,7 @@ def convert_2_COCO(meta_datas = ["cam30_straight_0", "cam30_straight_1", "cam30_
                 if p["bbox"][3] == 0:
                     p["bbox"][3] = 1
                 p["category_id"] += 1
-                p["depth"] = p["distance"]
+                p["depth"] = p["distance"] * 2468.71584471 / 3850.46790537
             
         data["videos"].extend([{"id": idx + 1, "file_name": meta_data}])
         data["images"].extend(new_data["images"])
@@ -44,5 +44,5 @@ def convert_2_COCO(meta_datas = ["cam30_straight_0", "cam30_straight_1", "cam30_
     return data
 
 data = convert_2_COCO()
-with open('data.json', 'w', encoding='utf-8') as f:
+with open('test_425_n.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=4)

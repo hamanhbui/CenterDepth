@@ -597,7 +597,7 @@ class DLASeg(BaseModel):
         self.first_level = int(np.log2(down_ratio))
         self.last_level = 5
         self.base = globals()['dla{}'.format(num_layers)](
-            pretrained=(opt.load_model == ''), opt=opt)
+            pretrained=(opt.checkpoint_name == ''), opt=opt)
 
         channels = self.base.channels
         scales = [2 ** i for i in range(len(channels[self.first_level:]))]

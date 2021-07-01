@@ -10,10 +10,8 @@ def resize(in_dir, out_dir):
 
         cv2.imwrite(out_dir + filename, resized)
 
-# resize("data/data_2806_1k/cam30_curve_0/images/", "data/simulated/images/cam30_curve_0/")
-resize("data/data_2806_1k/cam30_curve_1/images/", "data/simulated/images/cam30_curve_1/")
-resize("data/data_2806_1k/cam30_curve_2/images/", "data/simulated/images/cam30_curve_2/")
-resize("data/data_2806_1k/cam30_straight_0/images/", "data/simulated/images/cam30_straight_0/")
-resize("data/data_2806_1k/cam30_straight_1/images/", "data/simulated/images/cam30_straight_1/")
-resize("data/data_2806_1k/cam30_straight_2/images/", "data/simulated/images/cam30_straight_2/")
+resize("../data0107_test/cam30_test_curve_1/images/", "../data/simulated/images/cam30_test_curve_1/")
+resize("../data0107_test/cam30_test_long_1/images/", "../data/simulated/images/cam30_test_long_1/")
+resize("../data0107_test/cam425_test_curve_1/images/", "../data/simulated/images/cam425_test_curve_1/")
+resize("../data0107_test/cam425_test_long_1/images/", "../data/simulated/images/cam425_test_long_1/")
 

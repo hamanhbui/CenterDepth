@@ -91,18 +91,14 @@ class Trainer_cd_regression_v1:
         self.device = device
         self.exp_id = exp_id
         self.opt = opt
-        self.writer = self.set_writer(log_dir = "algorithms/" + self.opt.algorithm + "/results/tensorboards/" + self.opt.exp_name + "_" + exp_id + "/")
-        self.checkpoint_name = "algorithms/" + self.opt.algorithm + "/results/checkpoints/" + self.opt.exp_name + "_" + exp_id
-        self.plot_dir = "algorithms/" + self.opt.algorithm + "/results/plots/" + self.opt.exp_name + "_" + exp_id + "/"
-        
+
         print('Creating model...')
         self.model = create_model(opt.model, opt.heads, opt.head_conv, opt=opt)
         self.optimizer = get_optimizer(opt, self.model)
 
         self.start_epoch = 0
-        if opt.load_model != '':
-            self.model, self.optimizer, self.start_epoch = load_model(
-            self.model, opt.load_model, opt, self.optimizer)
+        if opt.resume:
+            self.model, self.optimizer, self.start_epoch = load_model(self.model, opt.checkpoint_name, opt, self.optimizer)
 
         self.loss_stats, self.loss = self._get_losses(opt)
         self.model_with_loss = ModleWithLoss(self.model, self.loss)
@@ -193,6 +189,8 @@ class Trainer_cd_regression_v1:
 
     def train(self):
         opt = self.opt
+        logging.basicConfig(filename = "algorithms/" + opt.algorithm + "/results/logs/" + opt.exp_name + "_" + opt.exp_id + '.log', filemode = 'w', level = logging.INFO)
+        self.writer = self.set_writer(log_dir = "algorithms/" + self.opt.algorithm + "/results/tensorboards/" + self.opt.exp_name + "_" + opt.exp_id + "/")
         for epoch in range(self.start_epoch + 1, opt.epochs + 1):
             log_dict_train = self.run_epoch('train', epoch, self.train_loader)
 
@@ -202,7 +200,7 @@ class Trainer_cd_regression_v1:
                 str_out += k + ":" + str(round(v, 8)) + "\t"
 
             logging.info('Train set: Epoch: [{}/{}]\tLosses: {}'.format(epoch, opt.epochs, str_out))
-            save_model(self.checkpoint_name + '.pt', epoch, self.model, self.optimizer)
+            save_model(opt.checkpoint_name, epoch, self.model, self.optimizer)
             
             if opt.val_intervals > 0 and epoch % opt.val_intervals == 0:
                 with torch.no_grad():
@@ -227,4 +225,4 @@ class Trainer_cd_regression_v1:
         str_out = ""            
         for k, v in log_dict_test.items():
             str_out += k + ":" + str(round(v, 8)) + "\t"
-            logging.info('Test set: Epoch: [{}/{}]\tLosses: {}'.format(self.opt.epochs, self.opt.epochs, str_out))
+        print('Test set: Epoch: [{}/{}]\tLosses: {}'.format(self.opt.epochs, self.opt.epochs, str_out))

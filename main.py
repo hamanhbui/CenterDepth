@@ -2,7 +2,6 @@ import _init_paths
 import os
 import argparse
 import json
-import logging
 import torch
 import numpy as np
 import random
@@ -46,8 +45,7 @@ def parse(opt, bash_args):
     opt.exp_dir = os.path.join(opt.root_dir, 'exp', 'tracking')
     opt.save_dir = os.path.join(opt.exp_dir, bash_args.exp_id)
     
-    if opt.resume and opt.load_model == '':
-      opt.load_model = "algorithms/" + opt.algorithm + "/results/checkpoints/" + opt.exp_name + "_" + opt.exp_id + '.pt'
+    opt.checkpoint_name = "algorithms/" + opt.algorithm + "/results/checkpoints/" + opt.exp_name + "_" + opt.exp_id + '.pt'
 
     opt.num_classes =  opt.num_classes
     opt.output_h = opt.input_h // 4
@@ -92,13 +90,12 @@ if __name__ == "__main__":
     torch.cuda.set_device(int(bash_args.gpu_id))
         
     # fix_random_seed(args.seed_value)
-    logging.basicConfig(filename = "algorithms/" + args.algorithm + "/results/logs/" + args.exp_name + "_" + bash_args.exp_id + '.log', filemode = 'w', level = logging.INFO)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    # trainer = algorithms_map[args.algorithm](args, device, bash_args.exp_id)
-    # trainer.train()
-    # trainer.test()
+    trainer = algorithms_map[args.algorithm](args, device, bash_args.exp_id)
+    trainer.train()
+    trainer.test()
     print("Finished!")
 
-    test(args)
+    # test(args)
     # demo(args)
