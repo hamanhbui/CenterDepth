@@ -59,10 +59,10 @@ def parse(opt, bash_args):
 
     opt.weights = {head: weight_dict[head] for head in opt.heads}
     for head in opt.weights:
-      if opt.weights[head] == 0:
-        del opt.heads[head]
+        if opt.weights[head] == 0:
+            del opt.heads[head]
     opt.head_conv = {head: [opt.head_conv \
-      for i in range(1 if head != 'reg' else 1)] for head in opt.heads}
+          for i in range(1 if head != 'reg' else 1)] for head in opt.heads}
     
     print('input h w:', opt.input_h, opt.input_w)
     print('heads', opt.heads)
@@ -92,10 +92,10 @@ if __name__ == "__main__":
     # fix_random_seed(args.seed_value)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    trainer = algorithms_map[args.algorithm](args, device, bash_args.exp_id)
-    trainer.train()
-    trainer.test()
+    # trainer = algorithms_map[args.algorithm](args, device, bash_args.exp_id)
+    # trainer.train()
+    # trainer.test()
     print("Finished!")
 
-    # test(args)
+    test(args)
     # demo(args)

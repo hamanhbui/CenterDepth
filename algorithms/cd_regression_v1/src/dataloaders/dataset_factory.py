@@ -7,8 +7,8 @@ import os
 from .custom_dataset import CustomDataset
 
 dataset_factory = {
-  'custom': CustomDataset
+	'custom': CustomDataset
 }
 
 def get_dataset(dataset):
-  return dataset_factory[dataset]
+	return dataset_factory[dataset]
