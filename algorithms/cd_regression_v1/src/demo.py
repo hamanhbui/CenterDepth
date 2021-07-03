@@ -1,119 +1,41 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import _init_paths
-
 import os
 import sys
 import cv2
 import json
 import copy
 import numpy as np
-from opts import opts
 from detector import Detector
 
-image_ext = ['jpg', 'jpeg', 'png', 'webp']
-video_ext = ['mp4', 'mov', 'avi', 'mkv']
-time_stats = ['tot', 'load', 'pre', 'net', 'dec', 'post', 'merge', 'display']
+def save_img(img, results):
+	for rs in results:
+		bbox = rs['bbox']
+		ct_x = int(bbox[0] + (bbox[2] - bbox[0])/2)
+		ct_y = int(bbox[1] + (bbox[3] - bbox[1])/2)
+		img = cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (0, 255, 0), 2)
+		img = cv2.putText(img, str(rs['dep'][0]), (ct_x, ct_y), 0, 0.5, (255, 0, 0))
+		img = cv2.circle(img, (ct_x, ct_y), radius=1, color=(0, 0, 255), thickness=-1)
+	
+	return img
 
 def demo(opt):
 	detector = Detector(opt)
+	video = cv2.VideoWriter('test_30.avi', 0, 1, (960,544))
 
-	if opt.demo == 'webcam' or \
-		opt.demo[opt.demo.rfind('.') + 1:].lower() in video_ext:
-		is_video = True
-		# demo on video stream
-		cam = cv2.VideoCapture(0 if opt.demo == 'webcam' else opt.demo)
-	else:
-		is_video = False
-		# Demo on images sequences
-		if os.path.isdir(opt.demo):
-			image_names = []
-			ls = os.listdir(opt.demo)
-			for file_name in sorted(ls):
-					ext = file_name[file_name.rfind('.') + 1:].lower()
-					if ext in image_ext:
-							image_names.append(os.path.join(opt.demo, file_name))
-		else:
-			image_names = [opt.demo]
-
-	# Initialize output video
-	out = None
-	out_name = opt.demo[opt.demo.rfind('/') + 1:]
-	print('out_name', out_name)
-	if opt.save_video:
-		# fourcc = cv2.VideoWriter_fourcc(*'XVID')
-		fourcc = cv2.VideoWriter_fourcc(*'H264')
-		out = cv2.VideoWriter('../results/{}.mp4'.format(
-			opt.exp_id + '_' + out_name),fourcc, opt.save_framerate, (
-				opt.video_w, opt.video_h))
-	
-	cnt = 0
-	results = {}
-
-	while True:
-			if is_video:
-				_, img = cam.read()
-				if img is None:
-					save_and_exit(opt, out, results, out_name)
-			else:
-				if cnt < len(image_names):
-					img = cv2.imread(image_names[cnt])
-				else:
-					save_and_exit(opt, out, results, out_name)
-			cnt += 1
-
-			# resize the original video for saving video results
-			if opt.resize_video:
-				img = cv2.resize(img, (opt.video_w, opt.video_h))
-
-			# skip the first X frames of the video
-			if cnt < opt.skip_first:
-				continue
-			
-			cv2.imshow('input', img)
-
-			# track or detect the image.
+	with open('data/simulated/annotations/test_30.json') as json_file:
+		data = json.load(json_file)
+		for p in data["images"]:
+			img = cv2.imread("data/simulated/images/" + p["file_name"])
 			ret = detector.run(img)
+			img = save_img(img, ret['results'])
+			video.write(img)
 
-			# log run time
-			time_str = 'frame {} |'.format(cnt)
-			for stat in time_stats:
-				time_str = time_str + '{} {:.3f}s |'.format(stat, ret[stat])
-			print(time_str)
-
-			# results[cnt] is a list of dicts:
-			#  [{'bbox': [x1, y1, x2, y2], 'tracking_id': id, 'category_id': c, ...}]
-			results[cnt] = ret['results']
-
-			# save debug image to video
-			if opt.save_video:
-				out.write(ret['generic'])
-				if not is_video:
-					cv2.imwrite('../results/demo{}.jpg'.format(cnt), ret['generic'])
-			
-			# esc to quit and finish saving video
-			if cv2.waitKey(1) == 27:
-				save_and_exit(opt, out, results, out_name)
-				return 
-	save_and_exit(opt, out, results)
-
-
-def save_and_exit(opt, out=None, results=None, out_name=''):
-	if opt.save_results and (results is not None):
-		save_dir =  '../results/{}_results.json'.format(opt.exp_id + '_' + out_name)
-		print('saving results to', save_dir)
-		json.dump(_to_list(copy.deepcopy(results)), 
-							open(save_dir, 'w'))
-	if opt.save_video and out is not None:
-		out.release()
-	sys.exit(0)
-
-def _to_list(results):
-	for img_id in results:
-		for t in range(len(results[img_id])):
-			for k in results[img_id][t]:
-				if isinstance(results[img_id][t][k], (np.ndarray, np.float32)):
-					results[img_id][t][k] = results[img_id][t][k].tolist()
-	return results
+	# file1 = open('data/demo_unified/sample.txt', 'r')
+	# Lines = file1.readlines()
+	# for line in Lines:
+	# 	file_name = line.strip()
+	# 	file_name = file_name.replace("/home/ubuntu/vinscenes/", "/home/ubuntu/source-code/CenterDepth/data/demo_unified/")
+	# 	img = cv2.imread(file_name)
+	# 	img = cv2.resize(img, (960,544))
+	# 	ret = detector.run(img)
+	# 	img = save_img(img, ret['results'])
+	# 	video.write(img)

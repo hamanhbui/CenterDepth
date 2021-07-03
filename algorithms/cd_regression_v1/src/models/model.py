@@ -4,9 +4,11 @@ import torch.nn as nn
 import os
 
 from .networks.dla import DLASeg
+from .networks.generic_network import GenericNetwork
 
 _network_factory = {
-	'dla': DLASeg
+	'dla': DLASeg,
+  	'generic': GenericNetwork
 }
 
 def create_model(arch, head, head_conv, opt=None):

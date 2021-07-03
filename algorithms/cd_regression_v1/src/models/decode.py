@@ -3,11 +3,6 @@ import torch.nn as nn
 from .utils import _gather_feat, _tranpose_and_gather_feat
 from .utils import _nms, _topk, _topk_channel
 
-
-def _update_kps_with_hm(
-	kps, output, batch, num_joints, K, bboxes=None, scores=None):
-	return kps, kps
-
 def generic_decode(output, K=100, opt=None):
 	if not ('hm' in output):
 		return {}

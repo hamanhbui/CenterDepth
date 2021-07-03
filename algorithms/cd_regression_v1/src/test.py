@@ -86,7 +86,6 @@ def test(opt):
 				pre_processed_images['meta']['pre_dets'] = \
 					load_results['{}'.format(int(img_id.numpy().astype(np.int32)[0]))]
 			else:
-				print()
 				print('No pre_dets for', int(img_id.numpy().astype(np.int32)[0]), 
 					'. Use empty initialization.')
 				pre_processed_images['meta']['pre_dets'] = []
@@ -119,7 +118,3 @@ def _to_list(results):
 				if isinstance(results[img_id][t][k], (np.ndarray, np.float32)):
 					results[img_id][t][k] = results[img_id][t][k].tolist()
 	return results
-
-if __name__ == '__main__':
-	opt = opts().parse()
-	test(opt)

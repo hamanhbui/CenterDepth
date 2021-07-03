@@ -8,7 +8,7 @@ import random
 
 from algorithms.cd_regression_v1.src.trainer import Trainer_cd_regression_v1
 from algorithms.cd_regression_v1.src.test import test
-# from algorithms.cd_regression_v1.src.demo import demo
+from algorithms.cd_regression_v1.src.demo import demo
 
 def fix_random_seed(seed_value):
     random.seed(seed_value)
@@ -92,10 +92,10 @@ if __name__ == "__main__":
     # fix_random_seed(args.seed_value)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    # trainer = algorithms_map[args.algorithm](args, device, bash_args.exp_id)
-    # trainer.train()
-    # trainer.test()
+    trainer = algorithms_map[args.algorithm](args, device, bash_args.exp_id)
+    trainer.train()
+    trainer.test()
     print("Finished!")
 
-    test(args)
+    # test(args)
     # demo(args)
