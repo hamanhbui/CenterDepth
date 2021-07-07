@@ -9,20 +9,20 @@ from detector import Detector
 def save_img(img, results, calib):
 	for rs in results:
 		bbox = rs['bbox']
-		# depth = rs["dep"][0]
+		depth = rs["dep"][0]
 		ct_x = int(bbox[0] + (bbox[2] - bbox[0])/2)
 		ct_y = int(bbox[1] + (bbox[3] - bbox[1])/2)
 
-		# locations = unproject_2d_to_3d((ct_x, ct_y), depth, calib)
+		locations = unproject_2d_to_3d((ct_x, ct_y), depth, calib)
 
 		if rs["class"] == 1:
 			img = cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0), 2)
 		else:
 			img = cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (0, 255, 0), 2)
 		
-		# img = cv2.putText(img, "X:" + str(locations[0]), (int(bbox[2]), int(bbox[1])), 0, 0.3, (255, 0, 0))
-		# img = cv2.putText(img, "Y:" + str(locations[1]), (int(bbox[2]), ct_y), 0, 0.3, (255, 0, 0))
-		# img = cv2.putText(img, str(depth), (int(bbox[2]), int(bbox[3])), 0, 0.3, (255, 0, 0))
+		img = cv2.putText(img, "X:" + str(locations[0]), (int(bbox[2]), int(bbox[1])), 0, 0.3, (255, 0, 0))
+		img = cv2.putText(img, "Y:" + str(locations[1]), (int(bbox[2]), ct_y), 0, 0.3, (255, 0, 0))
+		img = cv2.putText(img, str(depth), (int(bbox[2]), int(bbox[3])), 0, 0.3, (255, 0, 0))
 
 		img = cv2.circle(img, (ct_x, ct_y), radius=1, color=(0, 0, 255), thickness=-1)
 	

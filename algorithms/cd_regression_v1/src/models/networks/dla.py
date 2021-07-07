@@ -11,13 +11,6 @@ import torch.utils.model_zoo as model_zoo
 
 from .base_model import BaseModel
 
-try:
-	from .DCNv2.dcn_v2 import DCN
-except:
-	print('import DCN failed')
-	DCN = None
-
-
 BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
 
@@ -497,21 +490,6 @@ class GlobalConv(nn.Module):
 		x = self.act(x)
 		return x
 
-
-class DeformConv(nn.Module):
-	def __init__(self, chi, cho):
-		super(DeformConv, self).__init__()
-		self.actf = nn.Sequential(
-			nn.BatchNorm2d(cho, momentum=BN_MOMENTUM),
-			nn.ReLU(inplace=True)
-		)
-		self.conv = DCN(chi, cho, kernel_size=(3,3), stride=1, padding=1, dilation=1, deformable_groups=1)
-
-	def forward(self, x):
-		x = self.conv(x)
-		x = self.actf(x)
-		return x
-
 class IDAUp(nn.Module):
 	def __init__(self, o, channels, up_f, node_type=(DeformConv, DeformConv)):
 		super(IDAUp, self).__init__()
@@ -581,7 +559,6 @@ class Interpolate(nn.Module):
 
 
 DLA_NODE = {
-	'dcn': (DeformConv, DeformConv),
 	'gcn': (Conv, GlobalConv),
 	'conv': (Conv, Conv),
 }
@@ -592,7 +569,7 @@ class DLASeg(BaseModel):
 			heads, head_convs, 1, 64 if num_layers == 34 else 128, opt=opt)
 		down_ratio=4
 		self.opt = opt
-		self.node_type = DLA_NODE['dcn']
+		self.node_type = DLA_NODE['conv']
 		print('Using node type:', self.node_type)
 		self.first_level = int(np.log2(down_ratio))
 		self.last_level = 5
