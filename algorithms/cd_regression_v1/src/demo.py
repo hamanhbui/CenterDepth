@@ -9,7 +9,7 @@ from detector import Detector
 def save_img(img, results, calib):
 	for rs in results:
 		bbox = rs['bbox']
-		depth = rs["dep"][0]
+		depth = rs["dep"][0] * 3850.46790537
 		ct_x = int(bbox[0] + (bbox[2] - bbox[0])/2)
 		ct_y = int(bbox[1] + (bbox[3] - bbox[1])/2)
 
@@ -31,19 +31,19 @@ def save_img(img, results, calib):
 def unproject_2d_to_3d(pt_2d, depth, P):
   # pts_2d: 2
   # depth: 1
-  # P: 3 x 4
+  # P: 3 x 3
   # return: 3
-  z = depth - P[2, 3]
-  x = (pt_2d[0] * depth - P[0, 3] - P[0, 2] * z) / P[0, 0]
-  y = (pt_2d[1] * depth - P[1, 3] - P[1, 2] * z) / P[1, 1]
+  z = depth
+  x = ((pt_2d[0] - P[0, 2]) * z) / P[0, 0]
+  y = ((pt_2d[1] - P[1, 2]) * z) / P[1, 1]
   pt_3d = np.array([x, y, z], dtype=np.float32).reshape(3)
   return pt_3d
 
 def demo(opt):
 	calib = np.array(
-    [[1925.23395269, 0.0, 480.0, 0.0],
-     [0.0, 1733.98554679, 272.0, 0.0],
-     [0.0, 0.0, 1.0, 0.0]],
+    [[1925.23395269, 0.0, 480.0],
+     [0.0, 1733.98554679, 272.0],
+     [0.0, 0.0, 1.0]],
     dtype=np.float32)
 
 	detector = Detector(opt)

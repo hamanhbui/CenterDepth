@@ -87,13 +87,13 @@ if __name__ == "__main__":
     args = parse(args, bash_args)
     
     os.environ["CUDA_VISIBLE_DEVICES"] = bash_args.gpu_id  
-    torch.cuda.set_device(int(bash_args.gpu_id))
+    # torch.cuda.set_device(int(bash_args.gpu_id))
         
     # fix_random_seed(args.seed_value)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     trainer = algorithms_map[args.algorithm](args, device, bash_args.exp_id)
-    trainer.train()
+    # trainer.train()
     trainer.test()
     print("Finished!")
 

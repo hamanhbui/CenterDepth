@@ -1,5 +1,5 @@
-python main.py --config "algorithms/cd_regression_v1/configs/cd_regression.json" --exp_id "0" --gpu_id "0"
-# tensorboard --logdir "/home/ubuntu/habm1/source-code/CenterDepth/algorithms/cd_regression_v1/results/tensorboards/simulated_0"
+# python main.py --config "algorithms/cd_regression_v1/configs/cd_regression.json" --exp_id "0" --gpu_id "1"
+tensorboard --logdir "/home/ubuntu/source-code/CenterDepth/algorithms/cd_regression_v1/results/tensorboards/simulated_0"
 
 # unset http_proxy https_proxy HTTPS_PROXY HTTP_PROXY
 # pip3 install tensorboard

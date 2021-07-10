@@ -491,7 +491,7 @@ class GlobalConv(nn.Module):
 		return x
 
 class IDAUp(nn.Module):
-	def __init__(self, o, channels, up_f, node_type=(DeformConv, DeformConv)):
+	def __init__(self, o, channels, up_f, node_type=(Conv, Conv)):
 		super(IDAUp, self).__init__()
 		for i in range(1, len(channels)):
 			c = channels[i]
@@ -521,7 +521,7 @@ class IDAUp(nn.Module):
 
 class DLAUp(nn.Module):
 	def __init__(self, startp, channels, scales, in_channels=None, 
-				 node_type=DeformConv):
+				 node_type=Conv):
 		super(DLAUp, self).__init__()
 		self.startp = startp
 		if in_channels is None:

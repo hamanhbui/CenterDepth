@@ -56,6 +56,14 @@ class GenericLoss(torch.nn.Module):
 					losses[head] += self.crit_reg(
 						output[head], batch[head + '_mask'],
 						batch['ind'], batch[head]) / opt.num_stacks
+				# if head == 'dep':
+				# 	losses[head] += self.crit_reg(
+				# 		output[head] * 2468.71584471, batch[head + '_mask'],
+				# 		batch['ind'], batch[head]* 2468.71584471) / opt.num_stacks
+				# elif head in output:
+				# 	losses[head] += self.crit_reg(
+				# 		output[head], batch[head + '_mask'],
+				# 		batch['ind'], batch[head]) / opt.num_stacks
 		
 		losses['tot'] = 0
 		for head in opt.heads:
@@ -116,10 +124,13 @@ class Trainer_cd_regression_v1:
 		self.test_loader = DataLoader(Dataset(opt.test_meta_filenames, opt, 'test'), batch_size=1, shuffle=False, num_workers=1, pin_memory=True)
 
 	def set_writer(self, log_dir):
+		writers = {}
 		if not os.path.exists(log_dir):
 			os.mkdir(log_dir)
 		shutil.rmtree(log_dir)
-		return SummaryWriter(log_dir)
+		for mode in ["train", "val"]:
+			writers[mode] = SummaryWriter(os.path.join(log_dir, mode))
+		return writers
 
 	def set_device(self, device):
 		self.model_with_loss = self.model_with_loss.to(device)
@@ -196,8 +207,9 @@ class Trainer_cd_regression_v1:
 
 			str_out = ""            
 			for k, v in log_dict_train.items():
-				self.writer.add_scalar('Loss/train_' + k, v, epoch)
-				str_out += k + ":" + str(round(v, 8)) + "\t"
+				if k != "time":
+					self.writer["train"].add_scalar('Loss/' + k, v, epoch)
+					str_out += k + ":" + str(round(v, 8)) + "\t"
 
 			logging.info('Train set: Epoch: [{}/{}]\tLosses: {}'.format(epoch, opt.epochs, str_out))
 			save_model(opt.checkpoint_name, epoch, self.model, self.optimizer)
@@ -208,8 +220,10 @@ class Trainer_cd_regression_v1:
 
 				str_out = ""            
 				for k, v in log_dict_val.items():
-					self.writer.add_scalar('Loss/val_' + k, v, epoch)
-					str_out += k + ":" + str(round(v, 8)) + "\t"
+					if k != "time":
+						self.writer["val"].add_scalar('Loss/' + k, v, epoch)
+						str_out += k + ":" + str(round(v, 8)) + "\t"
+						
 				logging.info('Val set: Epoch: [{}/{}]\tLosses: {}'.format(epoch, opt.epochs, str_out))
 		
 			if epoch in opt.lr_step:

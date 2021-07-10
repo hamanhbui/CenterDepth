@@ -14,7 +14,7 @@ def convert_2_COCO(meta_datas = ["cam425_test_long_1", "cam425_test_curve_1"]):
     test_data = {"images": [], "annotations": [], "videos": [], "categories": [{ "id": 1, "name": "Traffic_light"}, { "id": 2, "name": "Traffic_sign"}]}
     for idx in range(len(meta_datas)):
         meta_data = meta_datas[idx]
-        with open('../data0107_test/' + meta_data + '/annotations.json') as json_file:
+        with open('data/simulated_original/test_dataset/data0107_test_update/' + meta_data + '/annotations.json') as json_file:
             new_data = json.load(json_file)
             for p in new_data["images"]:
                 p["height"] = 544
@@ -35,7 +35,7 @@ def convert_2_COCO(meta_datas = ["cam425_test_long_1", "cam425_test_curve_1"]):
                 if p["bbox"][3] == 0:
                     p["bbox"][3] = 1
                 p["category_id"] += 1
-                p["depth"] = p["distance"] * 2468.71584471 / 3850.46790537
+                p["depth"] = p["distance"] / 2468.71584471
             
         data["videos"].extend([{"id": idx + 1, "file_name": meta_data}])
         data["images"].extend(new_data["images"])
@@ -44,5 +44,5 @@ def convert_2_COCO(meta_datas = ["cam425_test_long_1", "cam425_test_curve_1"]):
     return data
 
 data = convert_2_COCO()
-with open('test_425_n.json', 'w', encoding='utf-8') as f:
+with open('test_425.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=4)
