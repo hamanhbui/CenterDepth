@@ -10,8 +10,8 @@ def resize(in_dir, out_dir):
 
         cv2.imwrite(out_dir + filename, resized)
 
-resize("../data0107_test/cam30_test_curve_1/images/", "../data/simulated/images/cam30_test_curve_1/")
-resize("../data0107_test/cam30_test_long_1/images/", "../data/simulated/images/cam30_test_long_1/")
-resize("../data0107_test/cam425_test_curve_1/images/", "../data/simulated/images/cam425_test_curve_1/")
-resize("../data0107_test/cam425_test_long_1/images/", "../data/simulated/images/cam425_test_long_1/")
-
+for x in os.walk("data/simulated_original/data1407_val/cam30/"):
+    for subfold in x[1]:
+        if not os.path.exists("data/simulated/images/val_cam30_" + subfold + "/"):
+            os.makedirs("data/simulated/images/val_cam30_" + subfold + "/")
+        resize("data/simulated_original/data1407_val/cam30/" + subfold + "/images/", "data/simulated/images/val_cam30_" + subfold + "/")

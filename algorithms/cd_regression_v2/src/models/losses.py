@@ -121,23 +121,14 @@ class DepthLoss(nn.Module):
 		super(DepthLoss, self).__init__()
 	
 	def forward(self, output, mask, ind, target):
-		
-		# output *= 2468.71584471
-		# target *= 2468.71584471
-
-		# output *= 3850.46790537
-		# target *= 3850.46790537
 		pred = _tranpose_and_gather_feat(output, ind)
+		loss = torch.div(torch.abs(pred - target), target + 1e-4) * mask
+		loss = loss.sum() / (mask.sum() + 1e-4)
+		# loss = F.l1_loss(pred * mask, target * mask, reduction='elementwise_mean')
 		
-		# loss = torch.div(torch.abs(pred - target), target + 1e-4) * mask
-		# loss = loss.sum() / (mask.sum() + 1e-4)
-		
-		# loss = F.mse_loss(pred * mask, target * mask, reduction='sum')
-		loss = F.l1_loss(pred * mask, target * mask, reduction='sum')
-
-		loss = loss / (mask.sum() + 1e-4)
+		# loss = torch.sqrt(F.mse_loss(pred * mask, target * mask, reduction='sum'))
+		# loss = loss / (mask.sum() + 1e-4)
 		return loss
-		# return torch.sqrt(loss)
 
 class WeightedBCELoss(nn.Module):
 	def __init__(self):

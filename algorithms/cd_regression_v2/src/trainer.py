@@ -20,6 +20,7 @@ from utils.post_process import generic_post_process
 
 from models.model import create_model, load_model, save_model
 from dataloaders.dataset_factory import get_dataset
+# from algorithms.ERM.src.models import model_factory
 
 class GenericLoss(torch.nn.Module):
 	def __init__(self, opt):
@@ -52,6 +53,10 @@ class GenericLoss(torch.nn.Module):
 			regression_heads = ['reg', 'wh', 'tracking', 'dep']
 
 			for head in regression_heads:
+				# if head in output:
+				# 	losses[head] += self.crit_reg(
+				# 		output[head], batch[head + '_mask'],
+				# 		batch['ind'], batch[head]) / opt.num_stacks
 				if head == 'dep':
 					losses[head] += self.depth_loss(
 						output[head], batch[head + '_mask'],
