@@ -55,7 +55,7 @@ class GenericLoss(torch.nn.Module):
 				if head == 'dep':
 					losses[head] += self.depth_loss(
 						output[head], batch[head + '_mask'],
-						batch['ind'], batch[head]) / opt.num_stacks
+						batch['ind'], batch) / opt.num_stacks
 				elif head in output:
 					losses[head] += self.crit_reg(
 						output[head], batch[head + '_mask'],

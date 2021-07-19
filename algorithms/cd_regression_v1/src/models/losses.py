@@ -120,20 +120,17 @@ class DepthLoss(nn.Module):
 	def __init__(self):
 		super(DepthLoss, self).__init__()
 	
-	def forward(self, output, mask, ind, target):
-		
-		# output *= 2468.71584471
-		# target *= 2468.71584471
-
-		# output *= 3850.46790537
-		# target *= 3850.46790537
+	def forward(self, output, mask, ind, batch):
 		pred = _tranpose_and_gather_feat(output, ind)
 		
-		# loss = torch.div(torch.abs(pred - target), target + 1e-4) * mask
-		# loss = loss.sum() / (mask.sum() + 1e-4)
+		# pred *= batch["focal"][0][0][0]
+		# if batch["focal"][0][0][0] == 1662.82807514:
+		# 	pred = -((batch['v'] - 272) * pred)/748.823239136
+		# elif batch["focal"][0][0][0] == 3850.46790537:
+		# 	pred = -((batch['v'] - 272) * pred)/1733.98554679
 		
-		# loss = F.mse_loss(pred * mask, target * mask, reduction='sum')
-		loss = F.l1_loss(pred * mask, target * mask, reduction='sum')
+		loss = F.l1_loss(pred * mask, batch["dep"] * mask, reduction='sum')
+		# loss = F.mse_loss(pred * mask, batch["dep"] * mask, reduction='sum')
 
 		loss = loss / (mask.sum() + 1e-4)
 		return loss

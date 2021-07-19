@@ -1,4 +1,4 @@
-python main.py --config "algorithms/cd_regression_v1/configs/waymo.json" --exp_id "0" --gpu_id "1"
+python main.py --config "algorithms/cd_regression_v1/configs/simulated.json" --exp_id "0" --gpu_id "1"
 # tensorboard --logdir "/home/ubuntu/source-code/CenterDepth/algorithms/cd_regression_v1/results/tensorboards/waymo_0"
 
 # unset http_proxy https_proxy HTTPS_PROXY HTTP_PROXY

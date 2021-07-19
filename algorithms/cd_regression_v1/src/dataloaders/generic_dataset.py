@@ -297,6 +297,11 @@ class GenericDataset(data.Dataset):
 		ret['ind'] = np.zeros((max_objs), dtype=np.int64)
 		ret['cat'] = np.zeros((max_objs), dtype=np.int64)
 		ret['mask'] = np.zeros((max_objs), dtype=np.float32)
+		ret['u'] = np.zeros((max_objs, 1), dtype=np.float32)
+		ret['v'] = np.zeros((max_objs, 1), dtype=np.float32)
+		ret['Y'] = np.zeros((max_objs, 1), dtype=np.float32)
+		ret['Z'] = np.zeros((max_objs, 1), dtype=np.float32)
+		ret['focal'] = np.zeros((max_objs, 1), dtype=np.float32)
 
 		regression_head_dims = {
 			'reg': 2, 'wh': 2, 'tracking': 2, 'dep': 1}
@@ -367,6 +372,11 @@ class GenericDataset(data.Dataset):
 		ct = np.array(
 			[(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2], dtype=np.float32)
 		ct_int = ct.astype(np.int32)
+		ret['u'][k] = int(ann['bbox'][0] + ann['bbox'][2]/2)
+		ret['v'][k] = int(ann['bbox'][1] + ann['bbox'][3]/2)
+		ret['Y'][k] = ann['center3d'][2]
+		ret['Z'][k] = ann['center3d'][0]
+		ret['focal'][k] = (calib[0][0] + calib[1][1]) / 2
 		ret['cat'][k] = cls_id - 1
 		ret['mask'][k] = 1
 		if 'wh' in ret:
@@ -394,9 +404,9 @@ class GenericDataset(data.Dataset):
 				gt_det['tracking'].append(np.zeros(2, np.float32))
 
 		if 'dep' in self.opt.heads:
-			if 'depth' in ann:
+			if 'center3d' in ann:
 				ret['dep_mask'][k] = 1
-				ret['dep'][k] = ann['depth'] * aug_s
+				ret['dep'][k] = (ann['center3d'][0] / ret['focal'][k]) * aug_s
 				gt_det['dep'].append(ret['dep'][k])
 			else:
 				gt_det['dep'].append(2)

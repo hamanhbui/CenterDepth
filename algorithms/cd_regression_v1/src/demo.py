@@ -10,15 +10,13 @@ def save_img(img, results, calib):
 	for rs in results:
 		bbox = rs['bbox']
 		depth = rs["dep"][0] * 2617.9215
+		# depth = rs["dep"][0] * 3850.46790537
 		ct_x = int(bbox[0] + (bbox[2] - bbox[0])/2)
 		ct_y = int(bbox[1] + (bbox[3] - bbox[1])/2)
 
 		locations = unproject_2d_to_3d((ct_x, ct_y), depth, calib)
 
-		if rs["class"] == 1:
-			img = cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (255, 0, 0), 2)
-		else:
-			img = cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (0, 255, 0), 2)
+		img = cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (0, 255, 0), 2)
 		
 		img = cv2.putText(img, "X:" + str(locations[0]), (int(bbox[2]), int(bbox[1])), 0, 0.3, (255, 0, 0))
 		img = cv2.putText(img, "Y:" + str(locations[1]), (int(bbox[2]), ct_y), 0, 0.3, (255, 0, 0))
@@ -40,11 +38,17 @@ def unproject_2d_to_3d(pt_2d, depth, P):
   return pt_3d
 
 def demo(opt):
+	# calib = np.array(
+	# [[1925.23395269, 0.0, 480],
+	#  [0.0, 1733.98554679, 272],
+	#  [0.0, 0.0, 1.0]],
+	# dtype=np.float32)
+
 	calib = np.array(
-    [[1308.96075, 0.0, 476.1521],
-     [0.0, 1178.89785166, 248.390805298],
-     [0.0, 0.0, 1.0]],
-    dtype=np.float32)
+	[[1308.96075, 0.0, 476.1521],
+	 [0.0, 1178.89785166, 248.390805298],
+	 [0.0, 0.0, 1.0]],
+	dtype=np.float32)
 
 	detector = Detector(opt)
 	video = cv2.VideoWriter('demo.avi', 0, fps = 5, frameSize = (960,544))
@@ -52,10 +56,10 @@ def demo(opt):
 	# with open(opt.test_meta_filenames) as json_file:
 	# 	data = json.load(json_file)
 	# 	for p in data["images"]:
-	# 		img = cv2.imread("data/simulated/images/" + p["file_name"])
+	# 		img = cv2.imread("data/simulated_v2/images/" + p["file_name"])
 	# 		ret = detector.run(img)
 	# 		img = save_img(img, ret['results'], calib)
-	# 		video.write(img)
+			# video.write(img)
 
 	file1 = open('data/demo_unified/sample.txt', 'r')
 	Lines = file1.readlines()
