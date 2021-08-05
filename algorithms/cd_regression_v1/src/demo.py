@@ -9,8 +9,7 @@ from detector import Detector
 def save_img(img, results, calib):
 	for rs in results:
 		bbox = rs['bbox']
-		depth = rs["dep"][0] * 2617.9215
-		# depth = rs["dep"][0] * 3850.46790537
+		depth = rs["dep"][0] * ((calib[0][0] + calib[1][1])/2)
 		ct_x = int(bbox[0] + (bbox[2] - bbox[0])/2)
 		ct_y = int(bbox[1] + (bbox[3] - bbox[1])/2)
 
@@ -31,6 +30,7 @@ def unproject_2d_to_3d(pt_2d, depth, P):
   # depth: 1
   # P: 3 x 3
   # return: 3
+  P = np.array(P)
   z = depth
   x = ((pt_2d[0] - P[0, 2]) * z) / P[0, 0]
   y = ((pt_2d[1] - P[1, 2]) * z) / P[1, 1]
@@ -38,28 +38,20 @@ def unproject_2d_to_3d(pt_2d, depth, P):
   return pt_3d
 
 def demo(opt):
-	# calib = np.array(
-	# [[1925.23395269, 0.0, 480],
-	#  [0.0, 1733.98554679, 272],
-	#  [0.0, 0.0, 1.0]],
-	# dtype=np.float32)
-
-	calib = np.array(
-	[[1308.96075, 0.0, 476.1521],
-	 [0.0, 1178.89785166, 248.390805298],
-	 [0.0, 0.0, 1.0]],
-	dtype=np.float32)
+	calib = [[2617.9215, 0.0, 952.3042],
+        [0.0, 2617.8467, 551.5737],
+        [0.0, 0.0, 1.0]]
 
 	detector = Detector(opt)
-	video = cv2.VideoWriter('demo.avi', 0, fps = 5, frameSize = (960,544))
+	video = cv2.VideoWriter('demo_real.avi', 0, fps = 5, frameSize = (1920,1208))
 
 	# with open(opt.test_meta_filenames) as json_file:
 	# 	data = json.load(json_file)
 	# 	for p in data["images"]:
-	# 		img = cv2.imread("data/simulated_v2/images/" + p["file_name"])
+	# 		img = cv2.imread("data/simulated/images/" + p["file_name"])
 	# 		ret = detector.run(img)
-	# 		img = save_img(img, ret['results'], calib)
-			# video.write(img)
+	# 		img = save_img(img, ret['results'],  p["calib"])
+	# 		video.write(img)
 
 	file1 = open('data/demo_unified/sample.txt', 'r')
 	Lines = file1.readlines()
@@ -67,7 +59,6 @@ def demo(opt):
 		file_name = line.strip()
 		file_name = file_name.replace("/home/ubuntu/vinscenes/", "/home/ubuntu/source-code/CenterDepth/data/demo_unified/")
 		img = cv2.imread(file_name)
-		img = cv2.resize(img, (960,544))
 		ret = detector.run(img)
 		img = save_img(img, ret['results'], calib)
 		video.write(img)

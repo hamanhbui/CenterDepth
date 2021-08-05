@@ -125,9 +125,9 @@ class DepthLoss(nn.Module):
 		
 		# pred *= batch["focal"][0][0][0]
 		# if batch["focal"][0][0][0] == 1662.82807514:
-		# 	pred = -((batch['v'] - 272) * pred)/748.823239136
+		# 	pred = -((batch['v'] - 604) * pred)/1662.82807514
 		# elif batch["focal"][0][0][0] == 3850.46790537:
-		# 	pred = -((batch['v'] - 272) * pred)/1733.98554679
+		# 	pred = -((batch['v'] - 604) * pred)/3850.46790537
 		
 		loss = F.l1_loss(pred * mask, batch["dep"] * mask, reduction='sum')
 		# loss = F.mse_loss(pred * mask, batch["dep"] * mask, reduction='sum')
@@ -135,6 +135,24 @@ class DepthLoss(nn.Module):
 		loss = loss / (mask.sum() + 1e-4)
 		return loss
 		# return torch.sqrt(loss)
+
+class DepthBerHuLoss(nn.Module):
+	def __init__(self):
+		super(DepthBerHuLoss, self).__init__()
+	
+	def forward(self, output, mask, ind, batch):
+		pred = _tranpose_and_gather_feat(output, ind)
+
+		diff = torch.abs(pred * mask - batch["dep"] * mask)
+		delta = 0.2 * torch.max(diff).data.cpu().numpy()
+
+		part1 = -F.threshold(-diff, -delta, 0.)
+		part2 = F.threshold(diff**2 - delta**2, 0., -delta**2.) + delta**2
+		part2 = part2 / (2.*delta)
+
+		loss = part1 + part2
+		loss = torch.sum(loss)
+		return loss
 
 class WeightedBCELoss(nn.Module):
 	def __init__(self):
