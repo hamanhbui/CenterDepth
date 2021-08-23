@@ -23,8 +23,8 @@ def save_img(img, results, calib, filename, frame_id):
 			"3d_bot_right": bot_right_3d,
 		})
 
-	cv2.imwrite("out/" + filename, img)
-	filename = filename.replace(".jpeg", ".json")
+	# cv2.imwrite("out/" + filename, img)
+	filename = filename.replace(".png", ".json")
 
 	with open("out/" + filename, 'w', encoding='utf-8') as f:
 		  json.dump(out_lines, f, ensure_ascii=False, indent=4)
@@ -49,39 +49,39 @@ def demo(opt):
 
 	detector = Detector(opt)
 
-	file1 = open('data/demo_unified/sample.txt', 'r')
-	Lines = file1.readlines()
-	sub_fold = "2dod-highway-batch1_4058_813"
-	frame_id = 1
-	for line in Lines:
-		file_name = line.strip()
-		file_name = file_name.replace("/home/ubuntu/vinscenes/", "/home/ubuntu/source-code/CenterDepth/data/demo_unified/")
-		if sub_fold != file_name.split("/")[9]:
-			sub_fold = file_name.split("/")[9]
-			detector.reset_tracking()
+	# file1 = open('data/demo_unified/sample.txt', 'r')
+	# Lines = file1.readlines()
+	# sub_fold = "2dod-highway-batch1_4058_813"
+	# frame_id = 1
+	# for line in Lines:
+	# 	file_name = line.strip()
+	# 	file_name = file_name.replace("/home/ubuntu/vinscenes/", "/home/ubuntu/source-code/CenterDepth/data/demo_unified/")
+	# 	if sub_fold != file_name.split("/")[9]:
+	# 		sub_fold = file_name.split("/")[9]
+	# 		detector.reset_tracking()
 
-		if not os.path.exists("out/" + sub_fold + "/"):
-				os.makedirs("out/" + sub_fold + "/")
-
-		img = cv2.imread(file_name)
-		ret = detector.run(img)
-		img = save_img(img, ret['results'], calib, sub_fold + "/" + file_name.split("/")[12], frame_id)
-		frame_id += 1
-	
-
-	# sub_fold = "test_cam30_BaseCurveTest_1_0"
-
-	# with open(opt.test_meta_filenames) as json_file:
-	# 	data = json.load(json_file)
-	# 	for p in data["images"]:			
-	# 		if sub_fold != p["file_name"].split("/")[0]:
-	# 			sub_fold = p["file_name"].split("/")[0]
-	# 			detector.reset_tracking()
-
-	# 		if not os.path.exists("out/" + sub_fold + "/"):
+	# 	if not os.path.exists("out/" + sub_fold + "/"):
 	# 			os.makedirs("out/" + sub_fold + "/")
 
-	# 		img = cv2.imread("data/simulated/images/" + p["file_name"])
-	# 		ret = detector.run(img)
+	# 	img = cv2.imread(file_name)
+	# 	ret = detector.run(img)
+	# 	img = save_img(img, ret['results'], calib, sub_fold + "/" + file_name.split("/")[12], frame_id)
+	# 	frame_id += 1
+	
 
-	# 		img = save_img(img, ret['results'], p["calib"], p["file_name"], p["frame_id"])
+	sub_fold = "test_cam30_BaseCurveTest_1_0"
+
+	with open(opt.test_meta_filenames) as json_file:
+		data = json.load(json_file)
+		for p in data["images"]:			
+			if sub_fold != p["file_name"].split("/")[0]:
+				sub_fold = p["file_name"].split("/")[0]
+				detector.reset_tracking()
+
+			if not os.path.exists("out/" + sub_fold + "/"):
+				os.makedirs("out/" + sub_fold + "/")
+
+			img = cv2.imread("data/simulated/images/" + p["file_name"])
+			ret = detector.run(img)
+
+			img = save_img(img, ret['results'], p["calib"], p["file_name"], p["frame_id"])
