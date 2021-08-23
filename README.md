@@ -1,6 +1,11 @@
 # CenterDepth
-Repository for the Applied Rotation Program (ARP) project: "Depth Estimation for Traffic Sign"
+Repository for the Applied Rotation Program (ARP) project: "CenterDepth: Depth Estimation for Traffic Sign based on CenterTrack"
+
 [This link](https://drive.google.com/drive/folders/1yQsjauYOKAmVXP8M8w7fTCSyxYt-93_P?usp=sharing) is the demo videos.
+
+<img src="gallery/demo.png" width="100%" height="50%">
+
+<img src="gallery/framework.png" width="100%" height="50%">
 
 ## Guideline
 ### To prepare:
@@ -27,8 +32,6 @@ where the parameters are the following:
 - `<gpu_index>`: GPU index. E.g., `<gpu_index> = "0"`
 
 **Note:** Select different settings by editing in `/configs/..json`, logging results are stored in `/results/logs/`, checkpoints are stored in `/results/checkpoints/`
-
-<img src="gallery/framework.png" width="50%" height="50%">
 
 ### To visualize objective functions:
 
