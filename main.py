@@ -97,5 +97,4 @@ if __name__ == "__main__":
     trainer.test()
     print("Finished!")
 
-    # test(args)
     # demo(args)

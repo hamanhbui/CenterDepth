@@ -5,9 +5,9 @@ Repository for the Applied Rotation Program (ARP) project: "CenterDepth: Depth E
 
 <img src="gallery/demo.png" width="100%" height="50%">
 
+## Guideline
 <img src="gallery/framework.png" width="100%" height="50%">
 
-## Guideline
 ### To prepare:
 Install prerequisite packages:
 ```sh
@@ -41,5 +41,3 @@ tensorboard --logdir <logdir>
 where `<logdir>`: absolute path stored TensorBoard results. E.g., `<logdir> = "/home/ubuntu/source-code/CenterDepth/algorithms/cd_regression_v1/results/tensorboards/simulated_0"`
 
 <img src="gallery/Loss.png" width="50%" height="50%">
-
-### To export demo video:
