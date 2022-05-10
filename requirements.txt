@@ -34,7 +34,7 @@ idna-ssl @ file:///tmp/build/80754af9/idna_ssl_1611752490495/work
 importlib-metadata==4.5.0
 iniconfig==1.1.1
 ipykernel==5.5.5
-ipython==7.16.1
+ipython==7.16.3
 ipython-genutils==0.2.0
 ipywidgets==7.6.3
 jedi==0.18.0
